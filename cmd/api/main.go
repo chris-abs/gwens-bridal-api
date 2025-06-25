@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"gwens-bridal/internal/handlers"
-	"gwens-bridal/internal/middleware"
-	"gwens-bridal/internal/storage"
+	"gwens-bridal-api/internal/handlers"
+	"gwens-bridal-api/internal/middleware"
+	"gwens-bridal-api/internal/storage"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
