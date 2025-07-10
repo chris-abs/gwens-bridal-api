@@ -16,7 +16,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Expected format: "Bearer <token>"
 		tokenParts := strings.Split(authHeader, " ")
 		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
 			http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
@@ -25,9 +24,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenString := tokenParts[1]
 		
-		// Parse and validate JWT
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Validate signing method
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
 			}
@@ -39,7 +36,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Token is valid, proceed to next handler
 		next.ServeHTTP(w, r)
 	})
 }

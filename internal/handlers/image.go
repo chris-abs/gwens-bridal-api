@@ -75,8 +75,7 @@ func (h *ImageHandler) GetImages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ImageHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
-	// Parse multipart form
-	err := r.ParseMultipartForm(10 << 20) // 10MB max
+	err := r.ParseMultipartForm(10 << 20) 
 	if err != nil {
 		http.Error(w, "File too large", http.StatusBadRequest)
 		return
@@ -95,25 +94,21 @@ func (h *ImageHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate file type
 	if !isValidImageType(fileHeader.Filename) {
 		http.Error(w, "Invalid file type. Only JPG, JPEG, PNG, and WEBP are allowed", http.StatusBadRequest)
 		return
 	}
 
-	// Generate unique filename
 	ext := filepath.Ext(fileHeader.Filename)
 	filename := fmt.Sprintf("%d_%s%s", time.Now().Unix(), strings.ReplaceAll(category, "/", "-"), ext)
 	s3Key := fmt.Sprintf("images/%s", filename)
 
-	// Read file content
 	fileContent, err := io.ReadAll(file)
 	if err != nil {
 		http.Error(w, "Failed to read file", http.StatusInternalServerError)
 		return
 	}
 
-	// Upload to S3
 	bucketName := os.Getenv("S3_BUCKET_NAME")
 	if bucketName == "" {
 		http.Error(w, "S3 bucket not configured", http.StatusInternalServerError)
@@ -131,10 +126,8 @@ func (h *ImageHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate S3 URL
 	s3URL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, s3Key)
 
-	// Save to database
 	var imageID int
 	err = h.db.QueryRow(`
 		INSERT INTO images (filename, s3_key, s3_url, category) 
@@ -147,7 +140,6 @@ func (h *ImageHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return the created image
 	image := models.Image{
 		ID:        imageID,
 		Filename:  filename,
@@ -176,7 +168,6 @@ func (h *ImageHandler) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get image details first
 	var img models.Image
 	err = h.db.QueryRow(`
 		SELECT id, filename, s3_key, s3_url, category, created_at, is_active 
@@ -193,7 +184,6 @@ func (h *ImageHandler) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Delete from S3
 	bucketName := os.Getenv("S3_BUCKET_NAME")
 	_, err = h.s3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
 		Bucket: aws.String(bucketName),
@@ -204,7 +194,6 @@ func (h *ImageHandler) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Delete from database
 	_, err = h.db.Exec("DELETE FROM images WHERE id = $1", id)
 	if err != nil {
 		http.Error(w, "Failed to delete from database", http.StatusInternalServerError)

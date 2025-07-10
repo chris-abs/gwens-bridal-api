@@ -24,7 +24,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check credentials against environment variables
 	adminUsername := os.Getenv("ADMIN_USERNAME")
 	adminPassword := os.Getenv("ADMIN_PASSWORD")
 
@@ -38,10 +37,9 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": req.Username,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(), // 24 hour expiry
+		"exp":      time.Now().Add(time.Hour * 24).Unix(), 
 		"iat":      time.Now().Unix(),
 	})
 

@@ -11,17 +11,3 @@ type Image struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	IsActive  bool      `json:"is_active" db:"is_active"`
 }
-
-type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
-type UploadResponse struct {
-	Message string `json:"message"`
-	Image   *Image `json:"image,omitempty"`
-}
