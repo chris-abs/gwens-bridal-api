@@ -45,7 +45,6 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	
 	r.Post("/api/auth/login", authHandler.Login)
 	r.Get("/api/images", imageHandler.GetImages) 
 
