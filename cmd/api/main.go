@@ -10,7 +10,7 @@ import (
 	"gwens-bridal-api/internal/storage"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware/cors"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -33,7 +33,7 @@ func main() {
 
 	authHandler := handlers.NewAuthHandler()
 	imageHandler := handlers.NewImageHandler(db, s3Client)
-	
+
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
@@ -44,6 +44,7 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
+
 	
 	r.Post("/api/auth/login", authHandler.Login)
 	r.Get("/api/images", imageHandler.GetImages) 
